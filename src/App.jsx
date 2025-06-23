@@ -84,6 +84,7 @@ function App() {
 
       <Routes>
         {/* Públicas */}
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/catalogo" element={<Catalog />} />
         <Route path="/producto/:id" element={<ProductDetail />} />
