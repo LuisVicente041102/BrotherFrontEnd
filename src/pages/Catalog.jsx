@@ -17,6 +17,8 @@ const Catalog = () => {
       setIsLoggedIn(true);
     }
 
+    console.log("🔗 BACKEND_URL en catálogo:", BACKEND_URL);
+
     const fetchProducts = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/products/public`);
@@ -51,7 +53,11 @@ const Catalog = () => {
                 className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col"
               >
                 <img
-                  src={`${BACKEND_URL}${product.imagen_url}`}
+                  src={
+                    product.imagen_url?.startsWith("http")
+                      ? product.imagen_url
+                      : `${BACKEND_URL}${product.imagen_url}`
+                  }
                   alt={product.nombre}
                   className="w-full h-48 object-cover"
                 />
