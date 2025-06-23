@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-console.log("🌐 Usando BACKEND_URL:", BACKEND_URL); // 👈 Verifica qué URL está tomando
+console.log("🌐 Usando BACKEND_URL:", BACKEND_URL); // ✅ Verifica la URL que toma
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,9 +21,16 @@ const Home = () => {
   }, []);
 
   const fetchTopProducts = async () => {
+    const endpoint = `${BACKEND_URL}/api/products/top`;
+    console.log("📦 Llamando a:", endpoint); // ✅ Verifica a qué URL estás haciendo fetch
+
     try {
-      const res = await fetch(`${BACKEND_URL}/api/products/top`);
+      const res = await fetch(endpoint);
+      console.log("📥 Respuesta fetch:", res); // ✅ Muestra la respuesta HTTP
+
       const data = await res.json();
+      console.log("🟢 Productos recibidos:", data); // ✅ Muestra los productos recibidos
+
       setTopProducts(data);
     } catch (error) {
       console.error("❌ Error al obtener productos destacados:", error);
