@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+console.log("🌐 Usando BACKEND_URL:", BACKEND_URL); // 👈 Verifica qué URL está tomando
+
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [topProducts, setTopProducts] = useState([]);
@@ -13,16 +16,17 @@ const Home = () => {
     if (token && user) {
       setIsLoggedIn(true);
     }
+
     fetchTopProducts();
   }, []);
 
   const fetchTopProducts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/products/top");
+      const res = await fetch(`${BACKEND_URL}/api/products/top`);
       const data = await res.json();
       setTopProducts(data);
     } catch (error) {
-      console.error("Error al obtener productos destacados:", error);
+      console.error("❌ Error al obtener productos destacados:", error);
     }
   };
 
@@ -63,7 +67,11 @@ const Home = () => {
                 className="bg-white border rounded-lg shadow hover:shadow-xl transition"
               >
                 <img
-                  src={`http://localhost:5000${product.imagen_url}`}
+                  src={
+                    product.imagen_url?.startsWith("http")
+                      ? product.imagen_url
+                      : `${BACKEND_URL}${product.imagen_url}`
+                  }
                   alt={product.nombre}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
