@@ -3,6 +3,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Catalog = () => {
   const [products, setProducts] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,7 +19,7 @@ const Catalog = () => {
 
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/products/public");
+        const res = await fetch(`${BACKEND_URL}/api/products/public`);
         const data = await res.json();
         setProducts(data);
       } catch (err) {
@@ -49,7 +51,7 @@ const Catalog = () => {
                 className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col"
               >
                 <img
-                  src={`http://localhost:5000${product.imagen_url}`}
+                  src={`${BACKEND_URL}${product.imagen_url}`}
                   alt={product.nombre}
                   className="w-full h-48 object-cover"
                 />
