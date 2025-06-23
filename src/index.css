@@ -1,10 +1,8 @@
-/* Importa las utilidades principales de Tailwind */
+@import "./assets/fonts/slick-fonts.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Importa fuentes personalizadas */
-@import "./assets/fonts/slick-fonts.css";
 
 @font-face {
   font-family: "slick";

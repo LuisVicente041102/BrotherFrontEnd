@@ -13,7 +13,6 @@ const Home = () => {
     if (token && user) {
       setIsLoggedIn(true);
     }
-
     fetchTopProducts();
   }, []);
 
@@ -31,49 +30,58 @@ const Home = () => {
     <div className="font-sans text-gray-800">
       <Header isLoggedIn={isLoggedIn} />
 
-      <section className="bg-indigo-100 py-16 text-center">
-        <h2 className="text-3xl font-bold mb-4">
+      {/* HERO */}
+      <section className="bg-indigo-100 py-20 px-4 text-center">
+        <h1 className="text-4xl font-bold text-indigo-800 mb-4">
           ¡Crea tu mundo con sublimación personalizada!
-        </h2>
-        <p className="mb-6 text-lg">
+        </h1>
+        <p className="text-lg text-indigo-700 mb-6">
           Productos únicos y personalizados para cada ocasión
         </p>
         <button
-          className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
           onClick={() => navigate("/catalogo")}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md transition"
         >
           Ver Catálogo
         </button>
       </section>
 
-      <section className="py-12 px-6 bg-white">
-        <h3 className="text-2xl font-bold text-center text-indigo-700 mb-8">
+      {/* TOP PRODUCTS */}
+      <section className="py-16 bg-white px-6">
+        <h2 className="text-3xl font-bold text-center text-indigo-700 mb-10">
           Productos más vendidos
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {topProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white shadow rounded overflow-hidden hover:shadow-lg transition"
-            >
-              <img
-                src={`http://localhost:5000${product.imagen_url}`}
-                alt={product.nombre}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h4 className="text-lg font-semibold text-indigo-700">
-                  {product.nombre}
-                </h4>
-                <p className="text-gray-600">
-                  ${parseFloat(product.precio_venta).toFixed(2)}
-                </p>
+        </h2>
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-6xl mx-auto">
+          {topProducts.length === 0 ? (
+            <p className="col-span-full text-center text-gray-500">
+              No hay productos disponibles en este momento.
+            </p>
+          ) : (
+            topProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white border rounded-lg shadow hover:shadow-xl transition"
+              >
+                <img
+                  src={`http://localhost:5000${product.imagen_url}`}
+                  alt={product.nombre}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-indigo-700">
+                    {product.nombre}
+                  </h3>
+                  <p className="text-gray-600">
+                    ${parseFloat(product.precio_venta).toFixed(2)}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
 
+      {/* FOOTER */}
       <footer className="text-center py-6 text-sm text-gray-500">
         &copy; 2025 Brother Sublima. Todos los derechos reservados.
       </footer>
