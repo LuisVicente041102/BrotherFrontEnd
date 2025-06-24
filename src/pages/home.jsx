@@ -22,16 +22,27 @@ const Home = () => {
 
   const fetchTopProducts = async () => {
     const endpoint = `${BACKEND_URL}/api/products/top`;
-    console.log("📦 Llamando a:", endpoint); // ✅ Verifica a qué URL estás haciendo fetch
+    console.log("📦 Llamando a:", endpoint); // ✅ URL a la que hace fetch
 
     try {
       const res = await fetch(endpoint);
-      console.log("📥 Respuesta fetch:", res); // ✅ Muestra la respuesta HTTP
+      console.log("📥 Respuesta fetch:", res);
 
-      const data = await res.json();
-      console.log("🟢 Productos recibidos:", data); // ✅ Muestra los productos recibidos
+      const contentType = res.headers.get("content-type");
+      console.log("🧾 Content-Type recibido:", contentType);
 
-      setTopProducts(data);
+      if (!res.ok) {
+        throw new Error(`❌ Error HTTP: ${res.status}`);
+      }
+
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        console.log("🟢 Productos recibidos:", data);
+        setTopProducts(data);
+      } else {
+        const text = await res.text();
+        console.error("⚠️ Respuesta no es JSON. Contenido recibido:", text);
+      }
     } catch (error) {
       console.error("❌ Error al obtener productos destacados:", error);
     }
