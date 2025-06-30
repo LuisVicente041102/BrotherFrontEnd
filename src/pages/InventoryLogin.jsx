@@ -14,7 +14,7 @@ const InventoryLogin = () => {
     console.log("🔄 Botón de iniciar sesión presionado");
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/inventory-auth/login`, {
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -27,6 +27,7 @@ const InventoryLogin = () => {
         throw new Error(data.message || "Error al iniciar sesión");
       }
 
+      // ✅ Guardar token y usuario con tipo: "inventario"
       localStorage.setItem("token", data.token);
       localStorage.setItem(
         "inventory_user",
