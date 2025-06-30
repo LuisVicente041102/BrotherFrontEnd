@@ -2,6 +2,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Success = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -12,7 +14,7 @@ const Success = () => {
 
   useEffect(() => {
     const guardarOrden = async () => {
-      if (hasSavedOrder.current) return; // 🔒 evita duplicado
+      if (hasSavedOrder.current) return;
       hasSavedOrder.current = true;
 
       const user = JSON.parse(localStorage.getItem("pos_user"));
@@ -24,7 +26,7 @@ const Success = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/api/stripe/save-order", {
+        const res = await fetch(`${BACKEND_URL}/api/stripe/save-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
