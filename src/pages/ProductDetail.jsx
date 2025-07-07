@@ -47,7 +47,13 @@ const ProductDetail = () => {
         <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
           <div className="md:w-1/2">
             <img
-              src={`${BACKEND_URL}${product.imagen_url}`}
+              // ** INICIO DEL CAMBIO **
+              src={
+                product.imagen_url?.startsWith("http")
+                  ? product.imagen_url
+                  : `${BACKEND_URL}${product.imagen_url}`
+              }
+              // ** FIN DEL CAMBIO **
               alt={product.nombre}
               className="w-full h-96 object-cover"
             />
@@ -112,7 +118,10 @@ const ProductDetail = () => {
                 cartItems={[
                   {
                     nombre: product.nombre,
-                    imagen_url: product.imagen_url,
+                    // Asegúrate de que imagen_url sea la URL correcta aquí también
+                    imagen_url: product.imagen_url?.startsWith("http")
+                      ? product.imagen_url
+                      : `${BACKEND_URL}${product.imagen_url}`,
                     precio_venta: product.precio_venta,
                     cantidad: 1,
                   },
