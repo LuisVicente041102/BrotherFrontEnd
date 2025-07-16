@@ -93,7 +93,8 @@ const ProductCarousel = ({ products }) => {
                     : `${BACKEND_URL}${product.imagen_url}`
                 }
                 alt={product.nombre}
-                className="w-full h-48 object-cover" // Asegura que la imagen cubra el área y sea responsiva.
+                // CAMBIO AQUÍ: de object-cover a object-contain
+                className="w-full h-48 object-contain" // Asegura que la imagen completa sea visible
               />
               <div className="p-4 flex-1 flex flex-col justify-between">
                 <div>
