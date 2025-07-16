@@ -13,22 +13,67 @@ const ViewProducts = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const navigate = useNavigate();
 
+  // Nuevos estados para la alerta personalizada y confirmación
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [actionToConfirm, setActionToConfirm] = useState(null);
+
+  // Función para mostrar alertas personalizadas
+  const displayAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+      setAlertMessage("");
+    }, 3000);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
 
-      const resProducts = await fetch(`${BACKEND_URL}/api/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const dataProducts = await resProducts.json();
-      setProducts(dataProducts);
-      setFilteredProducts(dataProducts);
+      // Fetch de productos
+      try {
+        const resProducts = await fetch(`${BACKEND_URL}/api/products`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!resProducts.ok) {
+          throw new Error(
+            `Error HTTP al obtener productos: ${resProducts.status}`
+          );
+        }
+        const dataProducts = await resProducts.json();
+        // Formatear imagen_url al cargar
+        const formattedProducts = dataProducts.map((p) => ({
+          ...p,
+          imagen_url: p.imagen_url?.startsWith("http")
+            ? p.imagen_url
+            : `${BACKEND_URL}${p.imagen_url}`,
+        }));
+        setProducts(formattedProducts);
+        setFilteredProducts(formattedProducts);
+      } catch (error) {
+        console.error("❌ Error al obtener productos:", error.message);
+        displayAlert(`Error al cargar productos: ${error.message}`);
+      }
 
-      const resCategories = await fetch(`${BACKEND_URL}/api/categories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const dataCategories = await resCategories.json();
-      setCategories(dataCategories);
+      // Fetch de categorías
+      try {
+        const resCategories = await fetch(`${BACKEND_URL}/api/categories`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!resCategories.ok) {
+          throw new Error(
+            `Error HTTP al obtener categorías: ${resCategories.status}`
+          );
+        }
+        const dataCategories = await resCategories.json();
+        setCategories(dataCategories);
+      } catch (error) {
+        console.error("❌ Error al obtener categorías:", error.message);
+        displayAlert(`Error al cargar categorías: ${error.message}`);
+      }
     };
 
     fetchData();
@@ -65,20 +110,58 @@ const ViewProducts = () => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
-  const handleArchive = async (id) => {
-    const confirmArchive = window.confirm("¿Deseas archivar este producto?");
-    if (!confirmArchive) return;
+  // Función para manejar el archivado de productos (con confirmación personalizada)
+  const handleArchive = (id) => {
+    setActionToConfirm(() => () => archiveProductConfirmed(id));
+    setIsConfirming(true);
+    setAlertMessage("¿Deseas archivar este producto?");
+  };
+
+  const archiveProductConfirmed = async (id) => {
+    setIsConfirming(false);
+    setActionToConfirm(null);
+    setShowAlert(false);
 
     const token = localStorage.getItem("token");
     try {
-      await fetch(`${BACKEND_URL}/api/products/${id}/archivar`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/products/${id}/archivar`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al archivar producto.");
+      }
+
       setProducts(products.filter((p) => p.id !== id));
+      displayAlert("✅ Producto archivado exitosamente.");
     } catch (error) {
       console.error("Error al archivar el producto:", error.message);
+      displayAlert(
+        `Ocurrió un error al archivar el producto: ${error.message}`
+      );
     }
+  };
+
+  // Función para manejar la confirmación (sí)
+  const handleConfirmYes = () => {
+    if (actionToConfirm) {
+      actionToConfirm();
+    }
+    setIsConfirming(false);
+    setActionToConfirm(null);
+    setShowAlert(false);
+  };
+
+  // Función para manejar la cancelación (no)
+  const handleConfirmNo = () => {
+    setIsConfirming(false);
+    setActionToConfirm(null);
+    setShowAlert(false);
   };
 
   return (
@@ -142,9 +225,11 @@ const ViewProducts = () => {
                   <td className="p-2">
                     {p.imagen_url ? (
                       <img
-                        src={`${BACKEND_URL}${p.imagen_url}`}
+                        // Lógica de construcción de URL de imagen consistente
+                        src={p.imagen_url} // Ya viene formateada en fetchData
                         alt={p.nombre}
-                        className="w-16 h-16 object-cover rounded"
+                        // CAMBIO AQUÍ: de object-cover a object-contain
+                        className="w-16 h-16 object-contain rounded"
                       />
                     ) : (
                       <span className="text-gray-400 italic">Sin imagen</span>
@@ -194,6 +279,36 @@ const ViewProducts = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Alerta personalizada (para mensajes generales) */}
+      {showAlert && !isConfirming && (
+        <div className="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50">
+          {alertMessage}
+        </div>
+      )}
+
+      {/* Modal de Confirmación (para acciones como archivar) */}
+      {isConfirming && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+            <p className="text-lg font-semibold mb-4">{alertMessage}</p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleConfirmYes}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Sí
+              </button>
+              <button
+                onClick={handleConfirmNo}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
