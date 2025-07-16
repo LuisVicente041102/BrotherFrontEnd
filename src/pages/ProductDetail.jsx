@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import CheckoutButton from "../components/CheckoutButton";
+// import CheckoutButton from "../components/CheckoutButton"; // Ya no es necesario si se elimina el botón
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -208,8 +208,8 @@ const ProductDetail = () => {
                 {addToCartButtonText}
               </button>
 
-              {/* ✅ Checkout directo con Stripe */}
-              <CheckoutButton
+              {/* ✅ Checkout directo con Stripe - ESTE BOTÓN HA SIDO ELIMINADO */}
+              {/* <CheckoutButton
                 cartItems={[
                   {
                     nombre: product.nombre,
@@ -217,12 +217,11 @@ const ProductDetail = () => {
                       ? product.imagen_url
                       : `${BACKEND_URL}${product.imagen_url}`,
                     precio_venta: product.precio_venta,
-                    cantidad: quantityToAdd, // Pasa la cantidad seleccionada al checkout
+                    cantidad: quantityToAdd,
                   },
                 ]}
-                // Deshabilita el botón de checkout si el producto está agotado
                 disabled={isAddToCartDisabled}
-              />
+              /> */}
 
               <button
                 onClick={() => navigate("/catalogo")}
